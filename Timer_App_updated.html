@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<!-- saved from url=(0094)https://timerforoffice.z21.web.core.windows.net/?_host_Info=Powerpoint$Win32$16.01$ko-KR$$$$16 -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timer App</title>
+  <script src="./Timer App_files/office.js.다운로드" type="text/javascript"></script><script type="text/javascript" id="HOST" crossorigin="anonymous" src="./Timer App_files/powerpoint-win32-16.01.js.다운로드"></script><script type="text/javascript" id="OFFICESTRINGS" crossorigin="anonymous" src="./Timer App_files/office_strings.js.다운로드"></script>
+  <style>
+    html,
+    body {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #00B050;
+    }
+
+    .container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      border: 2px solid black;
+      box-sizing: border-box;
+      padding: 10px;
+    }
+
+    .stage {
+      display: none;
+      width: 100%;
+    }
+
+    .stage.active {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .time-picker {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      margin-top: 5px;
+    }
+
+    .time-picker select {
+      padding: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 3px;
+    }
+
+    button:hover {
+      opacity: 0.8;
+    }
+
+    #timer,
+    #timer-preview {
+      margin: 10px 0;
+      font-weight: bold;
+      line-height: 1;
+    }
+
+    .button-row {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      align-items: center;
+    }
+
+    @keyframes blink {
+
+      0%,
+      49% {
+        opacity: 1;
+      }
+
+      50%,
+      100% {
+        opacity: 0;
+      }
+    }
+
+    .flashing {
+      animation: blink 1.5s step-end infinite;
+    }
+
+    #theme-selector {
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    /* Light Theme (default) */
+    .theme-light {
+      background-color: #00B050;
+      color: black;
+    }
+
+    .theme-light button {
+      background-color: #00B050;
+      color: black;
+    }
+
+    .theme-light select {
+      background-color: #00B050;
+      color: black;
+    }
+
+    /* Dark Theme */
+    .theme-dark {
+      background-color: #00B050;
+      color: white;
+      border-color: #555;
+    }
+
+    .theme-dark button {
+      background-color: #00B050;
+      color: white;
+    }
+
+    .theme-dark select {
+      background-color: #00B050;
+      color: white;
+    }
+
+    .theme-dark #info-stage,
+    .theme-dark #info-stage .info-title,
+    .theme-dark #info-stage a {
+      color: #e0e0e0 !important;
+    }
+
+    .theme-dark .info-link-container a {
+      color: #e0e0e0;
+    }
+
+    .sound-option {
+      display: flex;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .sound-option input {
+      margin-right: 5px;
+    }
+
+    .intro-text {
+      color: #666;
+      margin-bottom: 10px;
+      font-style: italic;
+    }
+
+    .intro-text a {
+      color: #666;
+      text-decoration: underline;
+    }
+
+    .intro-text a:hover {
+      opacity: 0.8;
+    }
+
+    .info-link-container {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 1000;
+    }
+
+    .info-link-container a {
+      color: #666;
+      text-decoration: underline;
+      font-style: italic;
+    }
+
+    .info-link-container a:hover {
+      opacity: 0.8;
+    }
+
+    #info-stage {
+      text-align: left !important;
+      padding: 20px 30px 20px 20px !important;
+      max-width: 600px !important;
+      margin: 0 auto !important;
+      color: #666 !important;
+      font-family: inherit !important;
+      font-size: 0.9em !important;
+    }
+
+    #info-stage .info-title {
+      font-weight: bold !important;
+      margin: 0 0 10px 0 !important;
+      text-align: left !important;
+      color: inherit !important;
+      display: block !important;
+      width: 100% !important;
+      padding-left: 0 !important;
+      font-size: 1.1em !important;
+    }
+
+    #info-stage ul {
+      padding-left: 20px !important;
+      margin: 0 !important;
+      list-style-type: disc !important;
+    }
+
+    #info-stage li {
+      margin-bottom: 10px !important;
+      text-align: left !important;
+    }
+
+    #info-stage a {
+      color: inherit !important;
+      text-decoration: underline !important;
+    }
+
+    .reveal-link-container {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 1000;
+    }
+
+    .reveal-link-container a {
+      color: #666;
+      text-decoration: underline;
+      font-style: italic;
+    }
+
+    .reveal-link-container a:hover {
+      opacity: 0.8;
+    }
+
+    #reveal-stage {
+      text-align: left !important;
+      padding: 20px 30px 20px 20px !important;
+      max-width: 600px !important;
+      margin: 0 auto !important;
+      color: #666 !important;
+      font-family: inherit !important;
+      font-size: 0.9em !important;
+    }
+
+    #reveal-stage .reveal-title {
+      font-weight: bold !important;
+      margin: 0 0 10px 0 !important;
+      text-align: left !important;
+      color: inherit !important;
+      display: block !important;
+      width: 100% !important;
+      padding-left: 0 !important;
+      font-size: 1.1em !important;
+    }
+
+    /* Dark Theme adjustments */
+    .theme-dark #reveal-stage,
+    .theme-dark #reveal-stage .reveal-title,
+    .theme-dark #reveal-stage a {
+      color: #e0e0e0 !important;
+    }
+
+    .theme-dark .reveal-link-container a {
+      color: #e0e0e0;
+    }
+  </style>
+<script type="text/javascript" crossorigin="anonymous" src="./Timer App_files/oteljs_agave.js.다운로드"></script></head>
+
+<body>
+  <div class="info-link-container">
+    <a href="https://timerforoffice.z21.web.core.windows.net/?_host_Info=Powerpoint$Win32$16.01$ko-KR$$$$16#" id="info-link">[Info]</a>
+  </div>
+  <div class="reveal-link-container">
+    <a href="https://timerforoffice.z21.web.core.windows.net/?_host_Info=Powerpoint$Win32$16.01$ko-KR$$$$16#" id="reveal-link">[Reveal]</a>
+  </div>
+  <div class="container theme-light" style="padding: 20px;">
+    <div id="config-stage" class="stage active">
+      <p class="intro-text" style="font-size: 16px;">Welcome! Select a time and click Start.</p>
+      <div class="time-picker">
+        <select id="hours" style="font-size: 20px; padding: 8.11594px;"><option value="0">0 hr</option><option value="1">1 hr</option><option value="2">2 hr</option><option value="3">3 hr</option><option value="4">4 hr</option><option value="5">5 hr</option><option value="6">6 hr</option></select>
+        <select id="minutes" style="font-size: 20px; padding: 8.11594px;"><option value="0">0 min</option><option value="1">1 min</option><option value="2">2 min</option><option value="3">3 min</option><option value="4">4 min</option><option value="5">5 min</option><option value="6">6 min</option><option value="7">7 min</option><option value="8">8 min</option><option value="9">9 min</option><option value="10">10 min</option><option value="11">11 min</option><option value="12">12 min</option><option value="13">13 min</option><option value="14">14 min</option><option value="15">15 min</option><option value="16">16 min</option><option value="17">17 min</option><option value="18">18 min</option><option value="19">19 min</option><option value="20">20 min</option><option value="21">21 min</option><option value="22">22 min</option><option value="23">23 min</option><option value="24">24 min</option><option value="25">25 min</option><option value="26">26 min</option><option value="27">27 min</option><option value="28">28 min</option><option value="29">29 min</option><option value="30">30 min</option><option value="31">31 min</option><option value="32">32 min</option><option value="33">33 min</option><option value="34">34 min</option><option value="35">35 min</option><option value="36">36 min</option><option value="37">37 min</option><option value="38">38 min</option><option value="39">39 min</option><option value="40">40 min</option><option value="41">41 min</option><option value="42">42 min</option><option value="43">43 min</option><option value="44">44 min</option><option value="45">45 min</option><option value="46">46 min</option><option value="47">47 min</option><option value="48">48 min</option><option value="49">49 min</option><option value="50">50 min</option><option value="51">51 min</option><option value="52">52 min</option><option value="53">53 min</option><option value="54">54 min</option><option value="55">55 min</option><option value="56">56 min</option><option value="57">57 min</option><option value="58">58 min</option><option value="59">59 min</option></select>
+        <select id="seconds" style="font-size: 20px; padding: 8.11594px;"><option value="0">0 sec</option><option value="1">1 sec</option><option value="2">2 sec</option><option value="3">3 sec</option><option value="4">4 sec</option><option value="5">5 sec</option><option value="6">6 sec</option><option value="7">7 sec</option><option value="8">8 sec</option><option value="9">9 sec</option><option value="10">10 sec</option><option value="11">11 sec</option><option value="12">12 sec</option><option value="13">13 sec</option><option value="14">14 sec</option><option value="15">15 sec</option><option value="16">16 sec</option><option value="17">17 sec</option><option value="18">18 sec</option><option value="19">19 sec</option><option value="20">20 sec</option><option value="21">21 sec</option><option value="22">22 sec</option><option value="23">23 sec</option><option value="24">24 sec</option><option value="25">25 sec</option><option value="26">26 sec</option><option value="27">27 sec</option><option value="28">28 sec</option><option value="29">29 sec</option><option value="30">30 sec</option><option value="31">31 sec</option><option value="32">32 sec</option><option value="33">33 sec</option><option value="34">34 sec</option><option value="35">35 sec</option><option value="36">36 sec</option><option value="37">37 sec</option><option value="38">38 sec</option><option value="39">39 sec</option><option value="40">40 sec</option><option value="41">41 sec</option><option value="42">42 sec</option><option value="43">43 sec</option><option value="44">44 sec</option><option value="45">45 sec</option><option value="46">46 sec</option><option value="47">47 sec</option><option value="48">48 sec</option><option value="49">49 sec</option><option value="50">50 sec</option><option value="51">51 sec</option><option value="52">52 sec</option><option value="53">53 sec</option><option value="54">54 sec</option><option value="55">55 sec</option><option value="56">56 sec</option><option value="57">57 sec</option><option value="58">58 sec</option><option value="59">59 sec</option></select>
+      </div>
+      <div id="timer-preview" style="font-size: 121.739px;">00:05:00</div>
+      <div class="sound-option">
+        <input type="checkbox" id="enable-sound-config">
+        <label for="enable-sound-config">Play sound when timer ends</label>
+      </div>
+      <div class="button-row">
+        <button id="start-config" style="font-size: 24px; padding: 16.2319px 32.4637px;">Start Timer</button>
+        <select id="theme-selector" style="font-size: 20px; padding: 8.11594px;">
+          <option value="light">Light Theme</option>
+          <option value="dark">Dark Theme</option>
+        </select>
+      </div>
+    </div>
+  
+    <div id="timer-stage" class="stage">
+      <div id="timer" style="font-size: 121.739px;">00:00:00</div>
+      <div class="sound-option">
+        <input type="checkbox" id="enable-sound-timer">
+        <label for="enable-sound-timer">Play sound when timer ends</label>
+      </div>
+      <div class="button-row">
+        <button id="pause-resume" style="font-size: 24px; padding: 16.2319px 32.4637px;">Pause</button>
+        <button id="new-timer" style="font-size: 24px; padding: 16.2319px 32.4637px;">New Timer</button>
+      </div>
+    </div>
+
+    <div id="info-stage" class="stage">
+      <p class="info-title">Presentation Mode:</p>
+      <ul>
+        <li>To use this timer in presentation mode, please test it first.</li>
+        <li>If it works successfully once, it should work reliably every time.</li>
+        <li>If the timer fails to start in presentation mode, see our <a href="https://timerforoffice.z21.web.core.windows.net/info.html" target="_blank">troubleshooting guide</a>.</li>
+      </ul>
+      <p class="info-title">Need Help?</p>
+      <ul>
+        <li>If you have any issues or suggestions, please email us at "timer@1990quebec.com" and we'll get back to you within 24 hours.</li>
+      </ul>
+    </div>
+    <div id="reveal-stage" class="stage">
+      <p class="reveal-title">Nothing to see here currently</p>
+      <p>Come back later...</p>
+    </div>
+  </div>
+
+  <script>
+    const configStage = document.getElementById('config-stage');
+    const timerStage = document.getElementById('timer-stage');
+    const hoursSelect = document.getElementById('hours');
+    const minutesSelect = document.getElementById('minutes');
+    const secondsSelect = document.getElementById('seconds');
+    const startConfigBtn = document.getElementById('start-config');
+    const timerDisplay = document.getElementById('timer');
+    const timerPreview = document.getElementById('timer-preview');
+    const pauseResumeBtn = document.getElementById('pause-resume');
+    const newTimerBtn = document.getElementById('new-timer');
+    const themeSelector = document.getElementById('theme-selector');
+    const container = document.querySelector('.container');
+    const enableSoundConfigCheckbox = document.getElementById('enable-sound-config');
+    const enableSoundTimerCheckbox = document.getElementById('enable-sound-timer');
+    const infoStage = document.getElementById('info-stage');
+    const infoLink = document.getElementById('info-link');
+    const infoLinkContainer = document.querySelector('.info-link-container');
+    const revealStage = document.getElementById('reveal-stage');
+    const revealLink = document.getElementById('reveal-link');
+    const revealLinkContainer = document.querySelector('.reveal-link-container');
+    let audioContext;
+
+    let state = {
+      totalSeconds: 0,
+      initialSeconds: 0,
+      isRunning: false
+    };
+
+    let timerInterval;
+
+    function log(message) {
+      console.log(new Date().toISOString() + ": " + message);
+    }
+
+    function populateTimeSelectors() {
+      for (let i = 0; i <= 6; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = `${i} hr`;
+        hoursSelect.appendChild(option);
+      }
+      for (let i = 0; i < 60; i++) {
+        const minuteOption = document.createElement('option');
+        minuteOption.value = i;
+        minuteOption.textContent = `${i} min`;
+        minutesSelect.appendChild(minuteOption);
+
+        const secondOption = document.createElement('option');
+        secondOption.value = i;
+        secondOption.textContent = `${i} sec`;
+        secondsSelect.appendChild(secondOption);
+      }
+
+      // Set default to 5 minutes
+      hoursSelect.value = "0";
+      minutesSelect.value = "5";
+      secondsSelect.value = "0";
+    }
+
+    populateTimeSelectors();
+
+    function updateTimerPreview() {
+      const hours = parseInt(hoursSelect.value);
+      const minutes = parseInt(minutesSelect.value);
+      const seconds = parseInt(secondsSelect.value);
+      timerPreview.textContent = `${padZero(hours)}:${padZero(minutes)}:${padZero(seconds)}`;
+    }
+
+    hoursSelect.addEventListener('change', updateTimerPreview);
+    minutesSelect.addEventListener('change', updateTimerPreview);
+    secondsSelect.addEventListener('change', updateTimerPreview);
+
+    startConfigBtn.addEventListener('click', () => {
+      log("Start button clicked");
+      state.totalSeconds = parseInt(hoursSelect.value) * 3600 +
+        parseInt(minutesSelect.value) * 60 +
+        parseInt(secondsSelect.value);
+      state.initialSeconds = state.totalSeconds;
+      state.isRunning = true;
+      updateTimerDisplay();
+      showStage('timer-stage');
+      enableSoundTimerCheckbox.checked = enableSoundConfigCheckbox.checked; // Sync sound option
+      startTimer();
+    });
+
+    pauseResumeBtn.addEventListener('click', () => {
+      log("Pause/Resume/Restart button clicked");
+      if (state.totalSeconds === 0) {
+        // Restart functionality
+        state.totalSeconds = state.initialSeconds;
+        updateTimerDisplay();
+        timerDisplay.classList.remove('flashing');
+        startTimer();
+      } else if (state.isRunning) {
+        pauseTimer();
+      } else {
+        startTimer();
+      }
+    });
+
+    newTimerBtn.addEventListener('click', () => {
+      log("New Timer button clicked");
+      clearInterval(timerInterval);
+      state.isRunning = false;
+      showStage('config-stage');
+
+      const hours = Math.floor(state.initialSeconds / 3600);
+      const minutes = Math.floor((state.initialSeconds % 3600) / 60);
+      const seconds = state.initialSeconds % 60;
+
+      hoursSelect.value = hours;
+      minutesSelect.value = minutes;
+      secondsSelect.value = seconds;
+      updateTimerPreview();
+
+      enableSoundConfigCheckbox.checked = enableSoundTimerCheckbox.checked; // Sync sound option
+
+      pauseResumeBtn.textContent = 'Pause';
+      timerDisplay.classList.remove('flashing');
+    });
+
+    function startTimer() {
+      log("Starting timer");
+      state.isRunning = true;
+      clearInterval(timerInterval);
+      timerInterval = setInterval(updateTimer, 1000);
+      pauseResumeBtn.textContent = 'Pause';
+      timerDisplay.classList.remove('flashing');
+    }
+
+    function pauseTimer() {
+      log("Pausing timer");
+      clearInterval(timerInterval);
+      state.isRunning = false;
+      pauseResumeBtn.textContent = 'Resume';
+    }
+
+    function updateTimer() {
+      if (state.totalSeconds > 0) {
+        state.totalSeconds--;
+        updateTimerDisplay();
+      } else {
+        clearInterval(timerInterval);
+        state.isRunning = false;
+        pauseResumeBtn.textContent = 'Restart';
+        timerDisplay.classList.add('flashing');
+        playBeep();
+      }
+    }
+
+    function updateTimerDisplay() {
+      const hours = Math.floor(state.totalSeconds / 3600);
+      const minutes = Math.floor((state.totalSeconds % 3600) / 60);
+      const seconds = state.totalSeconds % 60;
+      timerDisplay.textContent = `${padZero(hours)}:${padZero(minutes)}:${padZero(seconds)}`;
+    }
+
+    function padZero(num) {
+      return num.toString().padStart(2, '0');
+    }
+
+    function setupResizeObserver() {
+      const resizeObserver = new ResizeObserver(entries => {
+        for (let entry of entries) {
+          const { width, height } = entry.contentRect;
+          adjustLayout(width, height);
+        }
+      });
+
+      resizeObserver.observe(document.body);
+    }
+
+    function adjustLayout(width, height) {
+      const minDimension = Math.min(width, height);
+      const maxDimension = Math.max(width, height);
+      const aspectRatio = width / height;
+
+      // Base scale factor calculation
+      let scaleFactor = minDimension / 200;
+
+      // Adjust scale factor based on aspect ratio
+      if (aspectRatio < 1) {
+        // Portrait orientation
+        scaleFactor *= 0.8;
+      } else if (aspectRatio > 2) {
+        // Very wide orientation
+        scaleFactor *= 1.2;
+      }
+
+      // Scale timer and timer preview
+      const timerBaseFontSize = 60;
+      const timerMinFontSize = 24;
+      const timerMaxFontSize = 200;
+      const timerFontSize = Math.max(timerMinFontSize, Math.min(timerMaxFontSize, timerBaseFontSize * scaleFactor));
+      timerDisplay.style.fontSize = `${timerFontSize}px`;
+      timerPreview.style.fontSize = `${timerFontSize}px`;
+
+      // Scale buttons
+      const buttonBaseFontSize = 16;
+      const buttonMinFontSize = 10;
+      const buttonMaxFontSize = 24;
+      const buttons = document.querySelectorAll('button');
+      buttons.forEach(button => {
+        const fontSize = Math.max(buttonMinFontSize, Math.min(buttonMaxFontSize, buttonBaseFontSize * scaleFactor));
+        button.style.fontSize = `${fontSize}px`;
+        button.style.padding = `${Math.max(4, 8 * scaleFactor)}px ${Math.max(8, 16 * scaleFactor)}px`;
+      });
+
+      // Scale selects
+      const selectBaseFontSize = 14;
+      const selectMinFontSize = 10;
+      const selectMaxFontSize = 20;
+      const selects = document.querySelectorAll('select');
+      selects.forEach(select => {
+        const fontSize = Math.max(selectMinFontSize, Math.min(selectMaxFontSize, selectBaseFontSize * scaleFactor));
+        select.style.fontSize = `${fontSize}px`;
+        select.style.padding = `${Math.max(2, 4 * scaleFactor)}px`;
+      });
+
+      // Adjust container padding
+      const paddingBase = 10;
+      const padding = Math.max(5, Math.min(20, paddingBase * scaleFactor));
+      container.style.padding = `${padding}px`;
+
+      // Adjust intro text size to match the sound option label
+      const introText = document.querySelector('.intro-text');
+      const soundLabel = document.querySelector('.sound-option label');
+      if (introText && soundLabel) {
+        introText.style.fontSize = window.getComputedStyle(soundLabel).fontSize;
+      }
+    }
+
+    // Theme selection
+    themeSelector.addEventListener('change', (e) => {
+      const selectedTheme = e.target.value;
+      container.className = `container theme-${selectedTheme}`;
+    });
+
+    function playBeep() {
+      if (enableSoundTimerCheckbox.checked) {
+        if (!audioContext) {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        const oscillator = audioContext.createOscillator();
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(440, audioContext.currentTime); // 440 Hz
+        oscillator.connect(audioContext.destination);
+        oscillator.start();
+        oscillator.stop(audioContext.currentTime + 0.5); // Beep for 0.5 seconds
+      }
+    }
+
+    function setupInfoLink() {
+      infoLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (infoLink.textContent === '[Info]') {
+          showStage('info-stage');
+        } else {
+          showStage('config-stage');
+        }
+      });
+    }
+
+    function setupRevealLink() {
+      revealLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (revealLink.textContent === '[Reveal]') {
+          showStage('reveal-stage');
+        } else {
+          showStage('config-stage');
+        }
+      });
+    }
+
+    function showStage(stageId) {
+      [configStage, timerStage, infoStage, revealStage].forEach(stage => {
+        stage.classList.remove('active');
+      });
+      document.getElementById(stageId).classList.add('active');
+
+      // Show or hide the info and reveal links based on the active stage
+      if (stageId === 'timer-stage') {
+        infoLinkContainer.style.display = 'none';
+        revealLinkContainer.style.display = 'none';
+      } else if (stageId === 'info-stage') {
+        infoLinkContainer.style.display = 'block';
+        revealLinkContainer.style.display = 'none';
+        infoLink.textContent = '[Back]';
+      } else if (stageId === 'reveal-stage') {
+        infoLinkContainer.style.display = 'none';
+        revealLinkContainer.style.display = 'block';
+        revealLink.textContent = '[Back]';
+      } else {
+        infoLinkContainer.style.display = 'block';
+        revealLinkContainer.style.display = 'block';
+        infoLink.textContent = '[Info]';
+        revealLink.textContent = '[Reveal]';
+      }
+    }
+
+    // Initialize the Office Add-in
+    Office.onReady((info) => {
+      log("Office.onReady called");
+      if (info.host === Office.HostType.PowerPoint) {
+        log("Host is PowerPoint, initializing add-in");
+        setupResizeObserver();
+        setupInfoLink();
+        setupRevealLink();
+
+        Office.addin.onVisibilityModeChanged(function (args) {
+          if (args.visibilityMode === "Taskpane") {
+            // Add-in is visible, trigger layout adjustment
+            const { width, height } = document.body.getBoundingClientRect();
+            adjustLayout(width, height);
+          }
+        });
+
+        updateTimerPreview();
+      } else {
+        log("Host is not PowerPoint: " + info.host);
+      }
+    });
+  </script>
+
+
+</body></html>
